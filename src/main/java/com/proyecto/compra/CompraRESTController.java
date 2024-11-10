@@ -57,6 +57,22 @@ public class CompraRESTController {
 	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 	    }
 	}
+	
+	@GetMapping("/compras/usuario/{idusuario}")
+	public ResponseEntity<List<Compra>> listarComprasPorUsuario(@PathVariable Long idusuario) {
+	    // Busca el usuario en la base de datos
+	    Optional<Usuario> usuarioOptional = usuarioDao.findById(idusuario);
+	    if (usuarioOptional.isPresent()) {
+	        // Obtiene las compras del usuario
+	        List<Compra> compras = compraDao.findByUsuario(usuarioOptional.get());
+	        return ResponseEntity.status(HttpStatus.OK).body(compras);
+	    } else {
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+	    }
+	}
+
+
+	
 
 
 	@PostMapping("/compras/{idusuario}/{idlibro}")

@@ -43,6 +43,24 @@ public class LibroRESTController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
+    
+    
+    @GetMapping("/autor/{id}")
+    public ResponseEntity<List<Libro>> obtenerLibrosDeAutor(@PathVariable Long id) {
+        // Busca el autor por su ID para verificar que existe
+        Optional<Autor> autorOptional = autorDao.findById(id);
+        
+        if (autorOptional.isPresent()) {
+            // Si el autor existe, busca todos los libros asociados a ese autor
+            List<Libro> libros = LibroDao.findByAutorId(id);
+            return ResponseEntity.status(HttpStatus.OK).body(libros);
+        } else {
+            // Si el autor no existe, retorna un 404 Not Found
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
+    
 
     @PostMapping
     public ResponseEntity<Libro> agregarLibro(@RequestBody Libro libro) {
