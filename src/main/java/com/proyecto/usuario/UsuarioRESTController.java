@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,9 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173")
+
 public class UsuarioRESTController {
 
+	@Autowired
+	BCryptPasswordEncoder bCryptPasswordEncoder;
+	
 	@Autowired
 	UsuarioDao usuarioDao;
 
@@ -38,18 +42,30 @@ public class UsuarioRESTController {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		}
 	}
-
-	@PostMapping("/usuarios")
-	public ResponseEntity<Usuario> agregarUsuario(@RequestBody Usuario usuario) {
-		return ResponseEntity.status(HttpStatus.OK).body(usuarioDao.save(usuario));
+	
+	@GetMapping("/usuarios/nombre/{username}")
+	public ResponseEntity<Usuario> obtenerIdUsuario(@PathVariable String username) {
+		System.out.println("llegamos");
+		Optional<Usuario> UsuarioOptional = usuarioDao.findByUsuario(username);
+		if (UsuarioOptional.isPresent()) {
+			return ResponseEntity.status(HttpStatus.OK).body(UsuarioOptional.get());
+		} else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		}
 	}
 
-	@PutMapping("/usuarios/{id}")
+	@PostMapping("/usuarios/add")
+	public ResponseEntity<Usuario> agregarUsuario(@RequestBody Usuario usuario) {
+//	    usuario.setPassword(bCryptPasswordEncoder.encode(usuario.getPassword())); // Encriptar contraseña
+	    return ResponseEntity.status(HttpStatus.OK).body(usuarioDao.save(usuario));
+	}
+
+	@PutMapping("/usuarios/edit/{id}")
 	public ResponseEntity<Usuario> actualizarUsuario(@PathVariable Long id, @RequestBody Usuario nuevoUsuario) {
 		Optional<Usuario> optionalUsuario = usuarioDao.findById(id);
 		if (optionalUsuario.isPresent()) {
 			Usuario usuarioExistente = optionalUsuario.get();
-			usuarioExistente.setUsername(nuevoUsuario.getUsername());
+			usuarioExistente.setUsuario(nuevoUsuario.getUsuario());
 			usuarioExistente.setPassword(nuevoUsuario.getPassword());
 			return ResponseEntity.status(HttpStatus.OK).body(usuarioDao.save(usuarioExistente));
 		} else {
@@ -57,7 +73,7 @@ public class UsuarioRESTController {
 		}
 	}
 
-	@DeleteMapping("/usuarios/{id}")
+	@DeleteMapping("/usuarios/del/{id}")
 	public ResponseEntity<Usuario> eliminarUsuario(@PathVariable Long id) {
 		Optional<Usuario> optionalUsuario = usuarioDao.findById(id);
 		if (optionalUsuario.isPresent()) {

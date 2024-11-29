@@ -1,7 +1,12 @@
 package com.proyecto.usuario;
 
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -16,24 +21,28 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 
 @Entity
-public class Usuario {
+public class Usuario implements UserDetails {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY) // Autoincremental
 	private Long id;
-	private String username;
+	private String usuario;
 	private String password;
 	private String rol;
-	
+
 	@OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, targetEntity = Compra.class)
 	@JsonIgnore
 	private Set<Compra> compras = new HashSet<>();
 
 	/**
-	 * @return the username
+	 * @return the usuario
 	 */
-	public String getUsername() {
-		return username;
+	public String getUsuario() {
+		return usuario;
 	}
 
 	/**
@@ -50,13 +59,11 @@ public class Usuario {
 		return rol;
 	}
 
-	
-
 	/**
 	 * @param username the username to set
 	 */
-	public void setUsername(String username) {
-		this.username = username;
+	public void setUsuario(String usuario) {
+		this.usuario = usuario;
 	}
 
 	/**
@@ -72,8 +79,6 @@ public class Usuario {
 	public void setRol(String rol) {
 		this.rol = rol;
 	}
-
-	
 
 	/**
 	 * @return the id
@@ -102,8 +107,39 @@ public class Usuario {
 	public void setCompras(Set<Compra> compras) {
 		this.compras = compras;
 	}
+
+	@Override
+	public String getUsername() {
+	    return usuario; // Devolver el campo usuario
+	}
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+	    return List.of(() -> rol); // Convertir el rol en GrantedAuthority
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		// TODO Auto-generated method stub
+		return true;
+	}
 	
-	
-	
-	
+	@Override
+	public boolean isAccountNonExpired() {
+	    return true; // Implementar el método
+	}
+
+
 }

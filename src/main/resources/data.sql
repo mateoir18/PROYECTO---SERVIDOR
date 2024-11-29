@@ -28,8 +28,8 @@ INSERT INTO libro (titulo, precio, id_autor) VALUES ('1984', 13.99, 3);
 INSERT INTO libro (titulo, precio, id_autor) VALUES ('Rebelion en la granja', 14.99, 3);
 
 
-INSERT INTO usuario(username, password, rol) VALUES ('mateoir95', 'sa', 'ADMIN');
-INSERT INTO usuario(username, password, rol) VALUES ('adri86', 'da', 'USER');
+INSERT INTO usuario(usuario, password, rol) VALUES ('mateoir95', '$2a$12$sFN.GK/dlqOEx7XLzkFhPeXkJga5c9PDnav/LFi9iDzh8TzD3VoRe', 'ADMIN');
+INSERT INTO usuario(usuario, password, rol) VALUES ('adri86', '$2a$12$u1f/u/D8QKENhLP1jq0bTuWhu7VwT8zQUiZW2HrrXKlGymd5Wk8kK', 'USER');
 
 INSERT INTO compra(usuario_id, libro_id, fecha) VALUES (1, 3, '06-09-2024');
 INSERT INTO compra(usuario_id, libro_id, fecha) VALUES (1, 5, '06-09-2024');

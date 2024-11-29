@@ -13,23 +13,21 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
-@RequestMapping("/biografias")
 public class BiografiaRESTController {
 
 	@Autowired
 	BiografiaDao BiografiaDao;
 
-	@GetMapping
+	@GetMapping("/biografias")
 	public ResponseEntity<List<Biografia>> listarBiografias() {
 		return ResponseEntity.status(HttpStatus.OK).body((List<Biografia>) BiografiaDao.findAll());
 	}
 
-	@GetMapping("/{id}")
+	@GetMapping("/biografia/{id}")
 	public ResponseEntity<Biografia> obtenerBiografia(@PathVariable Long id) {
 		Optional<Biografia> biografiaOptional = BiografiaDao.findById(id);
 		if (biografiaOptional.isPresent()) {
@@ -39,12 +37,12 @@ public class BiografiaRESTController {
 		}
 	}
 
-	@PostMapping
+	@PostMapping("/biografias/add")
 	public ResponseEntity<Biografia> agregarBiografia(@RequestBody Biografia biografia) {
 		return ResponseEntity.status(HttpStatus.OK).body(BiografiaDao.save(biografia));
 	}
 
-	@PutMapping("/{id}")
+	@PutMapping("/biografia/edit/{id}")
 	public ResponseEntity<Biografia> actualizarBiografia(@PathVariable Long id, @RequestBody Biografia nuevaBiografia) {
 		Optional<Biografia> optionalBiografia = BiografiaDao.findById(id);
 		if (optionalBiografia.isPresent()) {
@@ -61,7 +59,7 @@ public class BiografiaRESTController {
 		}
 	}
 
-	@DeleteMapping("/del/{id}")
+	@DeleteMapping("/biografia/del/{id}")
 	public ResponseEntity<Biografia> eliminarBiografia(@PathVariable Long id) {
 		Optional<Biografia> optionalBiografia = BiografiaDao.findById(id);
 		if (optionalBiografia.isPresent()) {

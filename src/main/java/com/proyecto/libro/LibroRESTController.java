@@ -21,7 +21,6 @@ import com.proyecto.autor.AutorDao;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
-@RequestMapping("/libros")
 public class LibroRESTController {
 
     @Autowired
@@ -29,13 +28,14 @@ public class LibroRESTController {
     @Autowired
     AutorDao autorDao;
 
-    @GetMapping
+    @GetMapping("/libros")
     public ResponseEntity<List<Libro>> listarLibros() {
         return ResponseEntity.status(HttpStatus.OK).body((List<Libro>) LibroDao.findAll());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/libro/{id}")
     public ResponseEntity<Libro> obtenerLibro(@PathVariable Long id) {
+    	System.out.println("llegamos al libro");
         Optional<Libro> LibroOptional = LibroDao.findById(id);
         if (LibroOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK).body(LibroOptional.get());
@@ -45,10 +45,13 @@ public class LibroRESTController {
     }
     
     
-    @GetMapping("/autor/{id}")
+    @GetMapping("libros/autor/{id}")
+    
     public ResponseEntity<List<Libro>> obtenerLibrosDeAutor(@PathVariable Long id) {
+    	
         // Busca el autor por su ID para verificar que existe
         Optional<Autor> autorOptional = autorDao.findById(id);
+        
         
         if (autorOptional.isPresent()) {
             // Si el autor existe, busca todos los libros asociados a ese autor
@@ -62,12 +65,12 @@ public class LibroRESTController {
 
     
 
-    @PostMapping
+    @PostMapping("/libros/add")
     public ResponseEntity<Libro> agregarLibro(@RequestBody Libro libro) {
         return ResponseEntity.status(HttpStatus.OK).body(LibroDao.save(libro));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/libros/edit/{id}")
     public ResponseEntity<Libro> actualizarLibro(@PathVariable Long id, @RequestBody Libro nuevoLibro) {
         Optional<Libro> optionalLibro = LibroDao.findById(id);
         if (optionalLibro.isPresent()) {
@@ -91,7 +94,7 @@ public class LibroRESTController {
     }
 
 
-    @DeleteMapping("/del/{id}")
+    @DeleteMapping("/libro/del/{id}")
     public ResponseEntity<Libro> eliminarLibro(@PathVariable Long id) {
         Optional<Libro> optionalLibro = LibroDao.findById(id);
         if (optionalLibro.isPresent()) {

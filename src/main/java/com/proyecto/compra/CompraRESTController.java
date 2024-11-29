@@ -1,7 +1,9 @@
 package com.proyecto.compra;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,7 +24,7 @@ import com.proyecto.usuario.UsuarioDao;
 
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173")
+
 public class CompraRESTController {
 
 	@Autowired
@@ -71,11 +73,29 @@ public class CompraRESTController {
 	    }
 	}
 
+	@GetMapping("/compras/masvendidos")
+	public ResponseEntity<List<Libro>> obtenerLibrosMasVendidos() {
+	    // Obtener todas las compras
+	    List<Compra> compras = (List<Compra>) compraDao.findAll();
+
+	    // Crear un mapa para contar las ventas de cada libro
+	    Map<Libro, Long> conteoVentas = compras.stream()
+	        .collect(Collectors.groupingBy(Compra::getLibro, Collectors.counting()));
+
+	    // Ordenar los libros por la cantidad de ventas en orden descendente
+	    List<Libro> librosMasVendidos = conteoVentas.entrySet().stream()
+	        .sorted((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue())) // Orden descendente
+	        .map(Map.Entry::getKey) // Extraer los libros
+	        .collect(Collectors.toList());
+
+	    // Retornar la lista de libros ordenados
+	    return ResponseEntity.status(HttpStatus.OK).body(librosMasVendidos);
+	}
 
 	
 
 
-	@PostMapping("/compras/{idusuario}/{idlibro}")
+	@PostMapping("/compras/add/{idusuario}/{idlibro}")
 	public ResponseEntity<Compra> addCompra(@PathVariable Long idusuario,
 							@PathVariable Long idlibro) {
 		
@@ -98,11 +118,12 @@ public class CompraRESTController {
 			compraDao.save(compra);
 			
 			return ResponseEntity.status(HttpStatus.OK).body(compra);
+			
 		}
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
 	}
 
-	@DeleteMapping("/compras/{idusuario}/{idlibro}")
+	@DeleteMapping("/compras/del/{idusuario}/{idlibro}")
 	public ResponseEntity<Compra> delCompra(@PathVariable Long idusuario,
 							@PathVariable Long idlibro) {
 		

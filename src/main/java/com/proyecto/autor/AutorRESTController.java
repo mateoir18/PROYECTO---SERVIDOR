@@ -16,14 +16,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173") // Permitir solicitudes desde el puerto donde corre React
+@CrossOrigin(origins = "http://localhost:5173")
 public class AutorRESTController {
 
 	@Autowired
 	private AutorDao AutorDao;
 	
 	
-	@GetMapping("/inicio")
+	@GetMapping("/")
 	
 	public void inicio() {
 	
@@ -35,7 +35,7 @@ public class AutorRESTController {
 		return ResponseEntity.status(HttpStatus.OK).body((List<Autor>) AutorDao.findAll());
 	}
 
-	@GetMapping("/autores/{id}")
+	@GetMapping("/autor/{id}")
 
 	public ResponseEntity<Autor> obtenerAutor(@PathVariable Long id) {
 
@@ -47,13 +47,13 @@ public class AutorRESTController {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 	}
 
-	@PostMapping("/autores")
+	@PostMapping("/autores/add")
 
 	public ResponseEntity<Autor> agregarAutor(@RequestBody Autor autor) {
 		return ResponseEntity.status(HttpStatus.OK).body(AutorDao.save(autor));
 	}
 
-	@PutMapping("/autores/{id}")
+	@PutMapping("/autores/edit/{id}")
 
 	public ResponseEntity<Autor> actualizarAutor(@PathVariable Long id, @RequestBody Autor nuevoAutor) {
 
