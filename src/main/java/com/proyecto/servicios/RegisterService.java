@@ -1,5 +1,7 @@
 package com.proyecto.servicios;
 
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,7 @@ public class RegisterService {
 
 		authService.register(request, bindingResult); // Intenta registrar al usuario usando AuthService
 
-		return ResponseEntity.status(HttpStatus.OK).body("Usuario registrado con éxito"); // Devuelve una respuesta HTTP
+		return ResponseEntity.status(HttpStatus.OK).body(Map.of("mensaje","Usuario registrado con éxito")); // Devuelve una respuesta HTTP
 																							// con el mensaje de éxito
 
 	}

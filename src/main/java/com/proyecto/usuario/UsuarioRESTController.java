@@ -16,6 +16,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.proyecto.dto.AuthResponseDTO;
+import com.proyecto.dto.LoginRequestDTO;
+import com.proyecto.servicios.LoginService;
+
 
 
 @RestController
@@ -27,6 +31,9 @@ public class UsuarioRESTController {
 	
 	@Autowired
 	UsuarioDao usuarioDao;
+	
+	@Autowired
+	LoginService loginservice;
 
 	@GetMapping("/usuarios")
 	public ResponseEntity<List<Usuario>> listarUsuarios() {
@@ -61,17 +68,30 @@ public class UsuarioRESTController {
 	}
 
 	@PutMapping("/usuarios/edit/{id}")
-	public ResponseEntity<Usuario> actualizarUsuario(@PathVariable Long id, @RequestBody Usuario nuevoUsuario) {
-		Optional<Usuario> optionalUsuario = usuarioDao.findById(id);
-		if (optionalUsuario.isPresent()) {
-			Usuario usuarioExistente = optionalUsuario.get();
-			usuarioExistente.setUsuario(nuevoUsuario.getUsuario());
-			usuarioExistente.setPassword(nuevoUsuario.getPassword());
-			return ResponseEntity.status(HttpStatus.OK).body(usuarioDao.save(usuarioExistente));
-		} else {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-		}
+	public ResponseEntity<AuthResponseDTO> actualizarUsuario(@PathVariable Long id, @RequestBody Usuario nuevoUsuario) {
+	    return usuarioDao.findById(id).map(usuarioExistente -> {
+	        usuarioExistente.setUsuario(nuevoUsuario.getUsuario());
+
+	        // Cifrar la nueva contraseña si no está vacía
+	        if (nuevoUsuario.getPassword() != null && !nuevoUsuario.getPassword().isEmpty()) {
+	        	// Usa directamente bCryptPasswordEncoder
+	        	String encryptedPassword = bCryptPasswordEncoder.encode(nuevoUsuario.getPassword());
+
+	            usuarioExistente.setPassword(encryptedPassword);
+	        }
+
+	        usuarioDao.save(usuarioExistente);
+
+	        // Generar nuevo token después de actualizar
+	        LoginRequestDTO usuarioEdit = new LoginRequestDTO();
+	        usuarioEdit.setUsuario(nuevoUsuario.getUsuario());
+	        usuarioEdit.setPassword(nuevoUsuario.getPassword());
+	        AuthResponseDTO authResponse = loginservice.autenticar(usuarioEdit);
+	        return ResponseEntity.ok(authResponse);
+	    }).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
 	}
+
+	
 
 	@DeleteMapping("/usuarios/del/{id}")
 	public ResponseEntity<Usuario> eliminarUsuario(@PathVariable Long id) {

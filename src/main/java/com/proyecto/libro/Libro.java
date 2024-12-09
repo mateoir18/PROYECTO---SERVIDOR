@@ -3,6 +3,7 @@ package com.proyecto.libro;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.proyecto.autor.Autor;
 import com.proyecto.compra.Compra;
 
@@ -29,8 +30,10 @@ public class Libro {
 	@JoinColumn(name = "ID_AUTOR")
 	@ManyToOne(fetch = FetchType.EAGER)
 	private Autor autor;
-
+	
+	
 	@OneToMany(mappedBy = "libro", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonBackReference
 	private Set<Compra> compra = new HashSet<>();
 
 	/**

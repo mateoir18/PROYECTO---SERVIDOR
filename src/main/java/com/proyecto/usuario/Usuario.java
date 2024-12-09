@@ -8,6 +8,7 @@ import java.util.Set;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.proyecto.compra.Compra;
@@ -34,9 +35,10 @@ public class Usuario implements UserDetails {
 	private String password;
 	private String rol;
 
-	@OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, targetEntity = Compra.class)
-	@JsonIgnore
+	@OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonBackReference
 	private Set<Compra> compras = new HashSet<>();
+
 
 	/**
 	 * @return the usuario

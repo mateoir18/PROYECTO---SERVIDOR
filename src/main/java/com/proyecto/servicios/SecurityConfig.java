@@ -38,15 +38,18 @@ public class SecurityConfig {
 	        .cors().and() // Habilitar CORS
 	        .authorizeHttpRequests(auth -> auth
 	            .requestMatchers("/", "/autores", "/autor/{id}", "/libros", "/libro/{id}",
-	                             "/libros/autor/{id}", "/biografias", "/biografia/{id}", "/usuarios/add", "/auth/*", "/compras/masvendidos")
+	                             "/libros/autor/{id}", "/biografias", "/biografia/{id}", "/auth/*", "/compras/masvendidos")
 	                .permitAll()
-	            .requestMatchers("/usuarios/{id}", "/usuarios/edit/{id}", "/compras/usuario/{idusuario}",
+	            .requestMatchers("/usuarios/{id}","/compras/usuario/{idusuario}",
 	                             "/compras/add/{idusuario}/{idlibro}", "/usuarios/nombre/{username}")
 	                .authenticated()
+	                .requestMatchers("/usuarios/edit/{id}").hasAnyAuthority("ADMIN", "USER")
+
+
 	            .requestMatchers("/autores/add", "/autores/edit/{id}", "/autores/del/{id}", "/libros/add",
 	                             "/libros/edit/{id}", "/libro/del/{id}", "/biografias/add",
 	                             "/biografia/edit/{id}", "/biografia/del/{id}", "/usuarios/del/{id}",
-	                             "/compras", "/compras/{idusuario}/{idlibro}", "/compras/del/{idusuario}/{idlibro}", "/usuarios")
+	                             "/compras", "/compras/{idusuario}/{idlibro}", "/compras/del/{idusuario}/{idlibro}", "/compras/edit/{usuarioId}/{libroId}" , "/usuarios")
 	                .hasAuthority("ADMIN")
 	        )
 	        
